@@ -11,7 +11,7 @@ public class RemoveDemo : MonoBehaviour
         {
             gameObject.SetActive(false);
             CreateFunction._instance.allGameobject.Remove(gameObject);
-            CreateFunction._instance.L_Nav.Remove(gameObject.GetComponent<NavMeshAgent>());
+            CatchFunction._instance.L_Nav.Remove(gameObject.GetComponent<NavMeshAgent>());
             CatchFunction._instance.C_Nav.Remove(gameObject.GetComponent<NavMeshAgent>());
             CatchFunction._instance.Nav = null;
         }

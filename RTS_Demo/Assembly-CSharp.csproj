@@ -46,17 +46,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\AureoleRotation.cs" />
      <Compile Include="Assets\Scripts\AI\AIBehaviour.cs" />
+     <Compile Include="Assets\Scripts\AI\GameObjectController.cs" />
      <Compile Include="Assets\Scripts\AI\Player_AI.cs" />
-     <Compile Include="Assets\Scripts\AllGameobject.cs" />
-     <Compile Include="Assets\Scripts\Catch\CatchFunction.cs" />
-     <Compile Include="Assets\Scripts\Catch\DrawRectangle.cs" />
-     <Compile Include="Assets\Scripts\Catch\MoveFunction.cs" />
+     <Compile Include="Assets\Scripts\CatchAndMove\CatchFunction.cs" />
+     <Compile Include="Assets\Scripts\CatchAndMove\DrawRectangle.cs" />
+     <Compile Include="Assets\Scripts\CatchAndMove\MoveFunction.cs" />
      <Compile Include="Assets\Scripts\Create\CreateFunction.cs" />
      <Compile Include="Assets\Scripts\Create\CreateManager.cs" />
-     <Compile Include="Assets\Scripts\ObjPool\ObjPool.cs" />
+     <Compile Include="Assets\Scripts\GameObject\AllGameobject.cs" />
+     <Compile Include="Assets\Scripts\GameObject\ObjPool\ObjPool.cs" />
      <Compile Include="Assets\Scripts\RemoveDemo.cs" />
-     <Compile Include="Assets\Scripts\UIManager.cs" />
+     <Compile Include="Assets\Scripts\UI\UIManager.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>F:/Unity/5.6.4/Editor/Data/UnityExtensions/Unity/GUISystem/UnityEngine.UI.dll</HintPath>
  </Reference>

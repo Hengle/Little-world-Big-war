@@ -10,16 +10,13 @@ public class CreateFunction : MonoBehaviour
 {
     public static CreateFunction _instance;
     public List<GameObject> allGameobject;
-    public List<NavMeshAgent> L_Nav;
-
     private Transform GameManager;
 
     void Awake()
     {
         _instance = this;
         allGameobject = new List<GameObject>();
-        L_Nav = new List<NavMeshAgent>();
-        GameManager = GameObject.Find("GameManager").GetComponent<Transform>();
+        GameManager = GameObject.Find("GameobjectPool").GetComponent<Transform>();
     }
 
     /// <summary>
@@ -41,7 +38,7 @@ public class CreateFunction : MonoBehaviour
         m_gameobject.AddComponent<NavMeshAgent>();
         m_gameobject.AddComponent<Player_AI>();
         objAddList(m_gameobject);
-        m_gameobject.name =obj.name + allGameobject.Count.ToString();
+        m_gameobject.name = obj.name + allGameobject.Count.ToString();
 
         return m_gameobject;
     }
@@ -54,6 +51,6 @@ public class CreateFunction : MonoBehaviour
     {
         GameObject m_gameobject = obj;
         allGameobject.Add(obj);
-        L_Nav.Add(m_gameobject.GetComponent<NavMeshAgent>());
+        CatchFunction._instance.L_Nav.Add(m_gameobject.GetComponent<NavMeshAgent>());
     }
 }
