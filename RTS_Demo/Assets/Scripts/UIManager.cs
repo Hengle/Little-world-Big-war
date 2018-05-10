@@ -5,11 +5,13 @@ using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
-    public Button button;
+    public Button create;
+    public Button F2;
 
     void Start()
     {
-        button.onClick.AddListener(CreateManager._instance.createItem);
+        create.onClick.AddListener(CreateManager._instance.createItem);
+        F2.onClick.AddListener(CatchFunction._instance.F2);
     }
 }
 

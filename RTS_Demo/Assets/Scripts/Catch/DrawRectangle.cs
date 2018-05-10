@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.AI;
 
 public class DrawRectangle : MonoBehaviour
 {
@@ -10,10 +11,12 @@ public class DrawRectangle : MonoBehaviour
     private bool mouseIsDown; //是否开始画线标志
     private Material lineColor;
     private Touch touch;
+    private int CheckCount;
 
     // Use this for initialization
     void Start()
     {
+        CheckCount = 0;
         start = Vector3.zero;
         mouseIsDown = false;
         Shader shader = Shader.Find("Hidden/Internal-Colored");
@@ -33,15 +36,24 @@ public class DrawRectangle : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Moved)
             {
+                CheckCount = 0;
                 CatchFunction._instance.isCtach = true;
                 mouseIsDown = true;
                 Debug.Log("S:" + start.x);
+                CatchFunction._instance.isF2 = false;
+                CatchFunction._instance.isSingle = false;
+                CatchFunction._instance.catchMove = true;
             }
         }
         else if (touch.phase == TouchPhase.Ended)
         {
             mouseIsDown = false;
-            CheckSelection(start, touch.position);
+            if (CheckCount < 1)
+            {
+                CatchFunction._instance.C_Nav.Clear();
+                CheckSelection(start, touch.position);
+                CheckCount++;
+            }
             CatchFunction._instance.isCtach = true;
         }
         if (touch.phase == TouchPhase.Ended && !CatchFunction._instance.isCtach)
@@ -49,7 +61,6 @@ public class DrawRectangle : MonoBehaviour
             Debug.Log("Move");
             MoveFunction._instance.Move();
         }
-        //------------------------------------------------------------
     }
 
     private void OnPostRender()
@@ -122,7 +133,7 @@ public class DrawRectangle : MonoBehaviour
             }
             else
             {
-                Debug.Log(CreateFunction._instance.allGameobject[i].name);
+                CatchFunction._instance.C_Nav.Add(CreateFunction._instance.allGameobject[i].GetComponent<NavMeshAgent>());
             }
         }
     }
