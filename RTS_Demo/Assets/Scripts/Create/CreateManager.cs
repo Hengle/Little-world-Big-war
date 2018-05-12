@@ -22,7 +22,7 @@ public class CreateManager : MonoBehaviour
 
     public void createItem()
     {
-            ObjPool._instance.GetObj("Cube", 2f);        
+        ObjPool._instance.GetObj("Cube", 2f);
     }
 
     /// <summary>

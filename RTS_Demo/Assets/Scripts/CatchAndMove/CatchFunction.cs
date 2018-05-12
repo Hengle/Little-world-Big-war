@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -22,8 +23,6 @@ public class CatchFunction : MonoBehaviour
     public List<NavMeshAgent> L_Nav;//总Nav
     public List<GameObjectController> C_GOC;
 
-    private Ray ray;
-    private RaycastHit hit;
     private GameObjectController m_gameobject;
     void Awake()
     {
@@ -36,36 +35,31 @@ public class CatchFunction : MonoBehaviour
     }
 
     /// <summary>
-    /// 单个选取
+    /// 单个选取和移动
     /// </summary>
-    public void Catch()
+    public void SingleCatch(RaycastHit hit)
     {
-        hit = Hit();
-        if (hit.collider.tag == "Player")
+        if (C_GOC != null)
         {
-            if (C_GOC != null)
+            Debug.Log("Close");
+            for (int i = 0; i < C_GOC.Count; i++)
             {
-                Debug.Log("Close");
-                for (int i = 0; i < C_GOC.Count; i++)
-                {
-                    C_GOC[i].isBeCatch = false;
-                }
+                C_GOC[i].isBeCatch = false;
             }
-            if (m_gameobject != null)
-            {
-                m_gameobject.isBeCatch = false;
-            }
-            //改变所有选取状态
-            isSingle = true;
-            isCtach = false;
-            catchMove = false;
-            isF2 = false;
-            //获取特效UI组件设置开关
-            m_gameobject = hit.collider.GetComponent<GameObjectController>();
-            m_gameobject.isBeCatch = true;
-            Nav = hit.collider.GetComponent<NavMeshAgent>();
         }
-
+        if (m_gameobject != null)
+        {
+            m_gameobject.isBeCatch = false;
+        }
+        //改变所有选取状态
+        isSingle = true;
+        isCtach = false;
+        catchMove = false;
+        isF2 = false;
+        //获取特效UI组件设置开关
+        m_gameobject = hit.collider.GetComponent<GameObjectController>();
+        m_gameobject.isBeCatch = true;
+        Nav = hit.collider.GetComponent<NavMeshAgent>();
     }
 
     /// <summary>
@@ -80,7 +74,6 @@ public class CatchFunction : MonoBehaviour
             F2_Nav.Add(CatchFunction._instance.L_Nav[i]);
             m_gameobject = CatchFunction._instance.L_Nav[i].GetComponent<GameObjectController>();
             C_GOC.Add(m_gameobject);
-            Debug.Log("Add");
             m_gameobject.isBeCatch = true;
             isCtach = false;
             isSingle = false;
@@ -90,20 +83,9 @@ public class CatchFunction : MonoBehaviour
     }
 
     /// <summary>
-    /// 单个移动
-    /// </summary>
-    public void SingleMove()
-    {
-        if (hit.collider.tag == "Land" && Nav != null)
-        {
-            Nav.SetDestination(hit.point);
-        }
-    }
-
-    /// <summary>
     /// 全体移动
     /// </summary>
-    public void F2Move()
+    public void F2Move(RaycastHit hit)
     {
         for (int i = 0; i < F2_Nav.Count; i++)
         {
@@ -114,12 +96,17 @@ public class CatchFunction : MonoBehaviour
     /// <summary>
     /// 框选移动
     /// </summary>
-    public void CatchMove()
+    public void CatchMove(RaycastHit hit)
     {
         for (int i = 0; i < C_Nav.Count; i++)
         {
             C_Nav[i].SetDestination(hit.point);
         }
+    }
+
+    public void SingleMove(RaycastHit hit)
+    {
+            Nav.SetDestination(hit.point);
     }
 
     /// <summary>
@@ -132,13 +119,5 @@ public class CatchFunction : MonoBehaviour
             F2_Nav.Clear();
         }
         AllCatch();
-    }
-
-    public RaycastHit Hit()
-    {
-        hit = new RaycastHit();
-        ray = Camera.main.ScreenPointToRay(DrawRectangle._instance.touch.position);
-        Physics.Raycast(ray, out hit);
-        return hit;
     }
 }

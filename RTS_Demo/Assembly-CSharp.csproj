@@ -46,6 +46,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\CaneraFollow.cs" />
      <Compile Include="Assets\EasyTouchBundle\EasyTouch\Plugins\Components\EasyTouchTrigger.cs" />
      <Compile Include="Assets\EasyTouchBundle\EasyTouch\Plugins\Components\QuickBase.cs" />
      <Compile Include="Assets\EasyTouchBundle\EasyTouch\Plugins\Components\QuickDrag.cs" />
@@ -78,7 +79,6 @@
      <Compile Include="Assets\Scripts\AI\AureoleRotation.cs" />
      <Compile Include="Assets\Scripts\AI\GameObjectController.cs" />
      <Compile Include="Assets\Scripts\AI\Player_AI.cs" />
-     <Compile Include="Assets\Scripts\CameraFunction.cs" />
      <Compile Include="Assets\Scripts\CatchAndMove\CatchFunction.cs" />
      <Compile Include="Assets\Scripts\CatchAndMove\DrawRectangle.cs" />
      <Compile Include="Assets\Scripts\CatchAndMove\MoveFunction.cs" />

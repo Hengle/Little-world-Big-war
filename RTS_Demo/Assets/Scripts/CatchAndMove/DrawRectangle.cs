@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.AI;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 /// <summary>
 /// 框选功能与触摸功能
@@ -10,28 +12,40 @@ public class DrawRectangle : MonoBehaviour
 {
     public static DrawRectangle _instance;
 
-    public Color quads_Clor = Color.green;
-    private Vector3 start;//记下鼠标按下位置
-    private bool mouseIsDown; //是否开始画线标志
-    private Material lineColor;//画线的颜色
-    public Touch touch;//触摸变量
     private int CheckCount;//计数器防止重复添加过多的东西到集合
+    private int MoveCount;
+    private Material lineColor;//画线的颜色
+
+    private Touch touch_Catch_S;//框选起始位
+    private Touch touch_Catch_E;//框选结束位
+    private Touch touch_Catch_M_S;//相机起始位
+    private Touch touch_Catch_M_E;//相机结束位
+    private Vector3 touch_Postion_S;
+    private Vector3 touch_Postion_E;
+    private Vector3 offest;//差距
     private GameObjectController m_gameobject;
-    private RaycastHit hit;
+
+    public Color quads_Clor = Color.green;
+    public Touch touch;//触摸变量
+    public Transform m_Transform;
+    public bool isMoveMap;
+    public Camera C;
+    public Camera M_C;
+    public float speed;
 
     void Awake()
     {
         _instance = this;
         CheckCount = 0;
-        start = Vector3.zero;
-        mouseIsDown = false;
         Shader shader = Shader.Find("Hidden/Internal-Colored");
         lineColor = new Material(shader);
+        MoveCount = 0;
+        isMoveMap = false;
     }
 
     void Update()
     {
-            TouchFunction();
+        TouchFunction();
     }
 
     /// <summary>
@@ -39,31 +53,34 @@ public class DrawRectangle : MonoBehaviour
     /// </summary>
     private void OnPostRender()
     {
-        if (mouseIsDown)
+        if (Input.touchCount == 2 && UIManager._instance.CatchState == true)
         {
+            Debug.Log("Draw");
+            touch_Catch_E = Input.GetTouch(1);
             lineColor.SetPass(0);
-            Vector3 end = touch.position;//鼠标当前位置
+            Vector3 end = touch_Catch_E.position;//鼠标当前位置
             GL.PushMatrix();//保存摄像机变换矩阵
             //Debug.Log("E:" + end.x);
             GL.LoadPixelMatrix();//设置用屏幕坐标绘图
             GL.Begin(GL.QUADS);
             CatchFunction._instance.isCtach = true;
+            CatchFunction._instance.catchMove = true;
             GL.Color(new Color(quads_Clor.r, quads_Clor.g, quads_Clor.b, 0.1f));//设置颜色和透明度，方框内部透明
-            GL.Vertex3(start.x, start.y, 0);
-            GL.Vertex3(end.x, start.y, 0);
+            GL.Vertex3(touch_Postion_S.x, touch_Postion_S.y, 0);
+            GL.Vertex3(end.x, touch_Postion_S.y, 0);
             GL.Vertex3(end.x, end.y, 0);
-            GL.Vertex3(start.x, end.y, 0);
+            GL.Vertex3(touch_Postion_S.x, end.y, 0);
             GL.End();
             GL.Begin(GL.LINES);
             GL.Color(quads_Clor);//设置方框的边框颜色 边框不透明
-            GL.Vertex3(start.x, start.y, 0);
-            GL.Vertex3(end.x, start.y, 0);
-            GL.Vertex3(end.x, start.y, 0);
+            GL.Vertex3(touch_Postion_S.x, touch_Postion_S.y, 0);
+            GL.Vertex3(end.x, touch_Postion_S.y, 0);
+            GL.Vertex3(end.x, touch_Postion_S.y, 0);
             GL.Vertex3(end.x, end.y, 0);
             GL.Vertex3(end.x, end.y, 0);
-            GL.Vertex3(start.x, end.y, 0);
-            GL.Vertex3(start.x, end.y, 0);
-            GL.Vertex3(start.x, start.y, 0);
+            GL.Vertex3(touch_Postion_S.x, end.y, 0);
+            GL.Vertex3(touch_Postion_S.x, end.y, 0);
+            GL.Vertex3(touch_Postion_S.x, touch_Postion_S.y, 0);
             GL.End();
 
             GL.PopMatrix();//恢复摄像机投影矩阵
@@ -114,6 +131,7 @@ public class DrawRectangle : MonoBehaviour
             }
             else
             {
+                CatchFunction._instance.C_GOC.Add(m_gameobject);
                 CatchFunction._instance.C_Nav.Add(CreateFunction._instance.allGameobject[i].GetComponent<NavMeshAgent>());
                 m_gameobject.isBeCatch = true;
             }
@@ -125,44 +143,91 @@ public class DrawRectangle : MonoBehaviour
     /// </summary>
     private void TouchFunction()
     {
-        //当触摸手指为1时
-        if (Input.touchCount == 1)
+        if (Input.touchCount == 2 && UIManager._instance.CatchState == true)
         {
-            CameraFunction._instance.isMoveMap = false;
-            RaycastHit hit = CatchFunction._instance.Hit();
-            touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began) //手指触摸时
+            touch_Catch_S = Input.GetTouch(1);
+            UIManager._instance.CatchState = true;
+            if (touch_Catch_S.phase == TouchPhase.Began) //手指触摸时
             {
-                start = touch.position;//获取手指坐标
-                CatchFunction._instance.isCtach = false;//更改标志位
+                MoveCount = 0;
+                touch_Postion_S = touch_Catch_S.position;//获取手指坐标
+                CatchFunction._instance.isCtach = true;
             }
-            if (touch.phase == TouchPhase.Moved)//手指移动时
+            if (touch_Catch_S.phase == TouchPhase.Moved)//手指移动时
             {
-                CheckCount = 0;//计数器初始化
-                CatchFunction._instance.isCtach = true;//标志位开始框选
-                mouseIsDown = true;
-                //Debug.Log("S:" + start.x);
+                //计数器初始化
                 //更改移动标志位
+                CheckCount = 0;
+                CatchFunction._instance.isCtach = true;//标志位开始框选
                 CatchFunction._instance.isF2 = false;
                 CatchFunction._instance.isSingle = false;
                 CatchFunction._instance.catchMove = true;
+                touch_Postion_E = touch_Catch_S.position;
             }
-        }
-        else if (touch.phase == TouchPhase.Ended)//手指离开屏幕时
-        {
-            mouseIsDown = false;
-            if (CheckCount < 1)//开始清除上一轮的Nav集合，重新添加新的
+            if (touch_Catch_S.phase == TouchPhase.Ended)//手指离开屏幕时
             {
-                CatchFunction._instance.C_Nav.Clear();
-                CheckSelection(start, touch.position);
-                CheckCount++;
+                if (CheckCount < 1)//开始清除上一轮的Nav集合，重新添加新的
+                {
+                    CatchFunction._instance.C_GOC.Clear();
+                    CatchFunction._instance.C_Nav.Clear();
+                    CheckSelection(touch_Postion_S, touch_Postion_E);
+                    Debug.Log(touch_Postion_S);
+                    Debug.Log(touch_Postion_E);
+                    CheckCount++;
+                }
             }
-            CatchFunction._instance.isCtach = true;
         }
-        if (touch.phase == TouchPhase.Ended && !CatchFunction._instance.isCtach && CameraFunction._instance.isMoveMap == false)//如果手指离开且标志位正在抓取为False时开始移动方法
+        //==========================================================================================================================================
+        //当触摸手指为1时
+        if (Input.touchCount == 1)
         {
-            Debug.Log("Move");
-            MoveFunction._instance.Move();
+            Ray ray = M_C.ScreenPointToRay(Input.GetTouch(0).position);
+            RaycastHit hitinfo;
+            touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) //手指触摸时
+            {
+                touch_Catch_M_S = Input.GetTouch(0);
+                MoveCount = 0;
+                touch_Catch_M_E = Input.GetTouch(0);
+                isMoveMap = false;
+                CatchFunction._instance.isCtach = false;
+            }
+            if (touch.phase == TouchPhase.Moved)//手指移动时
+            {
+                touch_Catch_M_E = Input.GetTouch(0);
+                isMoveMap = true;
+                offest = C.ScreenToWorldPoint(touch_Catch_M_S.position) - C.ScreenToWorldPoint(touch_Catch_M_E.position);
+                if (isMoveMap == true)
+                {
+                    m_Transform.position = new Vector3(m_Transform.position.x + offest.x * speed, 0, m_Transform.position.z + offest.z * speed);
+                }
+                Debug.Log(offest);
+
+            }
+            if (touch.phase == TouchPhase.Ended)//如果手指离开且标志位正在抓取为False时开始移动方法
+            {
+                Physics.Raycast(ray, out hitinfo);
+                Debug.Log(hitinfo.collider.name);
+                if (isMoveMap == false && CatchFunction._instance.isCtach == false)
+                {
+                    if (hitinfo.collider.tag == "Land")
+                    {
+                        if (MoveCount < 1)
+                        {
+                            MoveFunction._instance.Move(hitinfo);
+                            Debug.Log("Move");
+                            MoveCount++;
+                        }
+                    }
+                    if (hitinfo.collider.tag == "Player")
+                    {
+                        if (MoveCount < 1)
+                        {
+                            CatchFunction._instance.SingleCatch(hitinfo);
+                        }
+                    }
+                }
+            }
         }
     }
 }

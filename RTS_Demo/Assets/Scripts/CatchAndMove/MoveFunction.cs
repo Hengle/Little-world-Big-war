@@ -16,21 +16,19 @@ public class MoveFunction : MonoBehaviour
     /// <summary>
     /// 移动分类与实现
     /// </summary>
-    public void Move()
+    public void Move(RaycastHit hit)
     {
-        Debug.Log("AAA");
-        CatchFunction._instance.Catch();
         if (CatchFunction._instance.isF2 == true)
         {
-            CatchFunction._instance.F2Move();
-        }
-        if(CatchFunction._instance.isSingle==true)
-        {
-            CatchFunction._instance.SingleMove();
+            CatchFunction._instance.F2Move(hit);
         }
         if (CatchFunction._instance.catchMove == true)
         {
-            CatchFunction._instance.CatchMove();
+            CatchFunction._instance.CatchMove(hit);
+        }
+        if (CatchFunction._instance.isSingle == true)
+        {
+            CatchFunction._instance.SingleMove(hit);
         }
     }
 }
