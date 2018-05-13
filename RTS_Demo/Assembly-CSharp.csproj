@@ -74,7 +74,6 @@
      <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCInput.cs" />
      <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCJoystick.cs" />
      <Compile Include="Assets\EasyTouchBundle\EasyTouchControls\Plugins\ETCTouchPad.cs" />
-     <Compile Include="Assets\NewBehaviourScript.cs" />
      <Compile Include="Assets\Scripts\AI\AIBehaviour.cs" />
      <Compile Include="Assets\Scripts\AI\AureoleRotation.cs" />
      <Compile Include="Assets\Scripts\AI\GameObjectController.cs" />
@@ -88,6 +87,7 @@
      <Compile Include="Assets\Scripts\GameObject\ObjPool\ObjPool.cs" />
      <Compile Include="Assets\Scripts\RemoveDemo.cs" />
      <Compile Include="Assets\Scripts\UI\UIManager.cs" />
+     <Compile Include="Assets\ceshi.cs" />
      <None Include="Assets\EasyTouchBundle\EasyTouchControls\ReleaseNotes.txt" />
      <None Include="Assets\EasyTouchBundle\EasyTouchControls\Documentation\Version 2.0.txt" />
      <None Include="Assets\EasyTouchBundle\EasyTouchControls\Issues in button behavior (MAC).txt" />

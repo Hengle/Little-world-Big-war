@@ -14,33 +14,35 @@ public class DrawRectangle : MonoBehaviour
 
     private int CheckCount;//计数器防止重复添加过多的东西到集合
     private int MoveCount;
-    private Material lineColor;//画线的颜色
 
+    private Material lineColor;//画线的颜色
     private Touch touch_Catch_S;//框选起始位
     private Touch touch_Catch_E;//框选结束位
     private Touch touch_Catch_M_S;//相机起始位
     private Touch touch_Catch_M_E;//相机结束位
     private Vector3 touch_Postion_S;
-    private Vector3 touch_Postion_E;
+    //private Vector3 touch_Postion_E;
     private Vector3 offest;//差距
     private GameObjectController m_gameobject;
 
     public Color quads_Clor = Color.green;
     public Touch touch;//触摸变量
     public Transform m_Transform;
+    public Camera C;//移动相机
+    public Camera M_C;//主相机
+
     public bool isMoveMap;
-    public Camera C;
-    public Camera M_C;
     public float speed;
 
     void Awake()
     {
         _instance = this;
+
         CheckCount = 0;
-        Shader shader = Shader.Find("Hidden/Internal-Colored");
-        lineColor = new Material(shader);
         MoveCount = 0;
         isMoveMap = false;
+        Shader shader = Shader.Find("Hidden/Internal-Colored");
+        lineColor = new Material(shader);
     }
 
     void Update()
@@ -55,7 +57,7 @@ public class DrawRectangle : MonoBehaviour
     {
         if (Input.touchCount == 2 && UIManager._instance.CatchState == true)
         {
-            Debug.Log("Draw");
+            //Debug.Log("Draw");
             touch_Catch_E = Input.GetTouch(1);
             lineColor.SetPass(0);
             Vector3 end = touch_Catch_E.position;//鼠标当前位置
@@ -122,8 +124,8 @@ public class DrawRectangle : MonoBehaviour
         {
             m_gameobject = CreateFunction._instance.allGameobject[i].GetComponent<GameObjectController>();
             m_gameobject.isBeCatch = false;
-            //把可选择的对象保存在characters数组里  
-            Vector3 location = Camera.main.WorldToScreenPoint(CreateFunction._instance.allGameobject[i].transform.position);//把对象的position转换成屏幕坐标  
+            Vector3 location = M_C.WorldToScreenPoint(CreateFunction._instance.allGameobject[i].transform.position);//把对象的position转换成屏幕坐标  
+            Debug.Log(m_gameobject.name+":"+location);
             if (location.x < p1.x || location.x > p2.x || location.y < p1.y || location.y > p2.y
                 || location.z < Camera.main.nearClipPlane || location.z > Camera.main.farClipPlane)//z方向就用摄像机的设定值，看不见的也不需要选择了  
             {
@@ -142,6 +144,72 @@ public class DrawRectangle : MonoBehaviour
     /// 触摸方法
     /// </summary>
     private void TouchFunction()
+    {
+        InputCount2();
+        InputCout1();
+    }
+
+    /// <summary>
+    /// 当触摸手指为1时
+    /// </summary>
+    private void InputCout1()
+    {
+        if (Input.touchCount == 1)//手指为1时
+        {
+            Ray ray = M_C.ScreenPointToRay(Input.GetTouch(0).position);
+            RaycastHit hitinfo;
+            touch = Input.GetTouch(0);
+            if (touch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) //手指触摸时
+            {
+                touch_Catch_M_S = Input.GetTouch(0);
+                MoveCount = 0;
+                touch_Catch_M_E = Input.GetTouch(0);
+                isMoveMap = false;
+                CatchFunction._instance.isCtach = false;
+            }
+            if (touch.phase == TouchPhase.Moved)//手指移动时
+            {
+                touch_Catch_M_E = Input.GetTouch(0);
+                isMoveMap = true;
+                offest = C.ScreenToWorldPoint(touch_Catch_M_S.position) - C.ScreenToWorldPoint(touch_Catch_M_E.position);
+                if (isMoveMap == true && UIManager._instance.CatchState == false)
+                {
+                    m_Transform.position = new Vector3(m_Transform.position.x + offest.x * speed, 0, m_Transform.position.z + offest.z * speed);
+                }
+                //Debug.Log(offest);
+
+            }
+            if (touch.phase == TouchPhase.Ended)//手指离开时
+            {
+                Physics.Raycast(ray, out hitinfo);
+                //Debug.Log(hitinfo.collider.name);
+                if (isMoveMap == false && CatchFunction._instance.isCtach == false)
+                {
+                    if (hitinfo.collider.tag == "Land")
+                    {
+                        if (MoveCount < 1)
+                        {
+                            MoveFunction._instance.Move(hitinfo);
+                            Debug.Log("Move");
+                            MoveCount++;
+                        }
+                    }
+                    if (hitinfo.collider.tag == "Player")
+                    {
+                        if (MoveCount < 1)
+                        {
+                            CatchFunction._instance.SingleCatch(hitinfo);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /// <summary>
+    /// 触摸手指为2时
+    /// </summary>
+    private void InputCount2()
     {
         if (Input.touchCount == 2 && UIManager._instance.CatchState == true)
         {
@@ -162,7 +230,7 @@ public class DrawRectangle : MonoBehaviour
                 CatchFunction._instance.isF2 = false;
                 CatchFunction._instance.isSingle = false;
                 CatchFunction._instance.catchMove = true;
-                touch_Postion_E = touch_Catch_S.position;
+                //touch_Postion_E = touch_Catch_S.position;
             }
             if (touch_Catch_S.phase == TouchPhase.Ended)//手指离开屏幕时
             {
@@ -170,62 +238,10 @@ public class DrawRectangle : MonoBehaviour
                 {
                     CatchFunction._instance.C_GOC.Clear();
                     CatchFunction._instance.C_Nav.Clear();
-                    CheckSelection(touch_Postion_S, touch_Postion_E);
-                    Debug.Log(touch_Postion_S);
-                    Debug.Log(touch_Postion_E);
+                    CheckSelection(touch_Postion_S, Input.GetTouch(1).position);
+                    //Debug.Log(touch_Postion_S);
+                    //Debug.Log(touch_Postion_E);
                     CheckCount++;
-                }
-            }
-        }
-        //==========================================================================================================================================
-        //当触摸手指为1时
-        if (Input.touchCount == 1)
-        {
-            Ray ray = M_C.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit hitinfo;
-            touch = Input.GetTouch(0);
-            if (touch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) //手指触摸时
-            {
-                touch_Catch_M_S = Input.GetTouch(0);
-                MoveCount = 0;
-                touch_Catch_M_E = Input.GetTouch(0);
-                isMoveMap = false;
-                CatchFunction._instance.isCtach = false;
-            }
-            if (touch.phase == TouchPhase.Moved)//手指移动时
-            {
-                touch_Catch_M_E = Input.GetTouch(0);
-                isMoveMap = true;
-                offest = C.ScreenToWorldPoint(touch_Catch_M_S.position) - C.ScreenToWorldPoint(touch_Catch_M_E.position);
-                if (isMoveMap == true)
-                {
-                    m_Transform.position = new Vector3(m_Transform.position.x + offest.x * speed, 0, m_Transform.position.z + offest.z * speed);
-                }
-                Debug.Log(offest);
-
-            }
-            if (touch.phase == TouchPhase.Ended)//如果手指离开且标志位正在抓取为False时开始移动方法
-            {
-                Physics.Raycast(ray, out hitinfo);
-                Debug.Log(hitinfo.collider.name);
-                if (isMoveMap == false && CatchFunction._instance.isCtach == false)
-                {
-                    if (hitinfo.collider.tag == "Land")
-                    {
-                        if (MoveCount < 1)
-                        {
-                            MoveFunction._instance.Move(hitinfo);
-                            Debug.Log("Move");
-                            MoveCount++;
-                        }
-                    }
-                    if (hitinfo.collider.tag == "Player")
-                    {
-                        if (MoveCount < 1)
-                        {
-                            CatchFunction._instance.SingleCatch(hitinfo);
-                        }
-                    }
                 }
             }
         }

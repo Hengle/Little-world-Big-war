@@ -10,13 +10,13 @@ using UnityEngine.UI;
 /// </summary>
 public class CatchFunction : MonoBehaviour
 {
-
     public static CatchFunction _instance;
 
     public bool isCtach = false;//是否正在框选
     public bool catchMove = false; //是否处在框选状态
     public bool isSingle = false;//是否处在单个选取状态
     public bool isF2 = false;//是否处在F2选取状态
+
     public NavMeshAgent Nav;//单个Nav存储
     public List<NavMeshAgent> C_Nav;//抓取并临时存储的Nav
     public List<NavMeshAgent> F2_Nav;//F2存储Nav
@@ -24,6 +24,7 @@ public class CatchFunction : MonoBehaviour
     public List<GameObjectController> C_GOC;
 
     private GameObjectController m_gameobject;
+
     void Awake()
     {
         _instance = this;
@@ -35,7 +36,7 @@ public class CatchFunction : MonoBehaviour
     }
 
     /// <summary>
-    /// 单个选取和移动
+    /// 单个选取
     /// </summary>
     public void SingleCatch(RaycastHit hit)
     {
@@ -104,6 +105,10 @@ public class CatchFunction : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// 单个移动
+    /// </summary>
+    /// <param name="hit"></param>
     public void SingleMove(RaycastHit hit)
     {
             Nav.SetDestination(hit.point);
