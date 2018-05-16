@@ -91,6 +91,8 @@ public class CatchFunction : MonoBehaviour
         for (int i = 0; i < F2_Nav.Count; i++)
         {
             F2_Nav[i].SetDestination(hit.point);
+            F2_Nav[i].GetComponent<Player_AI>().state = AI_State.Move;
+            F2_Nav[i].GetComponent<Player_AI>().isMove = true;
         }
     }
 
@@ -102,6 +104,8 @@ public class CatchFunction : MonoBehaviour
         for (int i = 0; i < C_Nav.Count; i++)
         {
             C_Nav[i].SetDestination(hit.point);
+            C_Nav[i].GetComponent<Player_AI>().state = AI_State.Move;
+            C_Nav[i].GetComponent<Player_AI>().isMove = true;
         }
     }
 
@@ -111,7 +115,9 @@ public class CatchFunction : MonoBehaviour
     /// <param name="hit"></param>
     public void SingleMove(RaycastHit hit)
     {
-            Nav.SetDestination(hit.point);
+        Nav.SetDestination(hit.point);
+        Nav.GetComponent<Player_AI>().state = AI_State.Move;
+        Nav.GetComponent<Player_AI>().isMove = true;
     }
 
     /// <summary>

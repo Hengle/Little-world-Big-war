@@ -17,26 +17,11 @@ public class CreateManager : MonoBehaviour
 
     void Update()
     {
-        Move();
+
     }
 
-    public void createItem()
+    public void createItem(string item_Name, Vector3 create_Postion)
     {
-        ObjPool._instance.GetObj("Cube", 2f);
+        ObjPool._instance.GetObj(item_Name, 2f, create_Postion);
     }
-
-    /// <summary>
-    /// 移动方法Demo
-    /// </summary>
-    private void Move()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            RaycastHit hit = new RaycastHit();
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            Physics.Raycast(ray, out hit);
-            //CreateFunction.instance.F2(hit.point);
-        }
-    }
-
 }

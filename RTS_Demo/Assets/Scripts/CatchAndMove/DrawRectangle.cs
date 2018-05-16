@@ -30,6 +30,8 @@ public class DrawRectangle : MonoBehaviour
     public Transform m_Transform;
     public Camera C;//移动相机
     public Camera M_C;//主相机
+    public RaycastHit hitinfo;
+    public bool isOnUI;
 
     public bool isMoveMap;
     public float speed;
@@ -43,6 +45,7 @@ public class DrawRectangle : MonoBehaviour
         isMoveMap = false;
         Shader shader = Shader.Find("Hidden/Internal-Colored");
         lineColor = new Material(shader);
+        isOnUI = false;
     }
 
     void Update()
@@ -125,7 +128,7 @@ public class DrawRectangle : MonoBehaviour
             m_gameobject = CreateFunction._instance.allGameobject[i].GetComponent<GameObjectController>();
             m_gameobject.isBeCatch = false;
             Vector3 location = M_C.WorldToScreenPoint(CreateFunction._instance.allGameobject[i].transform.position);//把对象的position转换成屏幕坐标  
-            Debug.Log(m_gameobject.name+":"+location);
+            Debug.Log(m_gameobject.name + ":" + location);
             if (location.x < p1.x || location.x > p2.x || location.y < p1.y || location.y > p2.y
                 || location.z < Camera.main.nearClipPlane || location.z > Camera.main.farClipPlane)//z方向就用摄像机的设定值，看不见的也不需要选择了  
             {
@@ -157,7 +160,6 @@ public class DrawRectangle : MonoBehaviour
         if (Input.touchCount == 1)//手指为1时
         {
             Ray ray = M_C.ScreenPointToRay(Input.GetTouch(0).position);
-            RaycastHit hitinfo;
             touch = Input.GetTouch(0);
             if (touch.phase == TouchPhase.Began && !EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) //手指触摸时
             {
@@ -166,13 +168,18 @@ public class DrawRectangle : MonoBehaviour
                 touch_Catch_M_E = Input.GetTouch(0);
                 isMoveMap = false;
                 CatchFunction._instance.isCtach = false;
+                isOnUI = false;
+            }
+            if (touch.phase == TouchPhase.Began && EventSystem.current.IsPointerOverGameObject(Input.GetTouch(0).fingerId)) //手指触摸时
+            {
+                isOnUI = true;
             }
             if (touch.phase == TouchPhase.Moved)//手指移动时
             {
                 touch_Catch_M_E = Input.GetTouch(0);
                 isMoveMap = true;
                 offest = C.ScreenToWorldPoint(touch_Catch_M_S.position) - C.ScreenToWorldPoint(touch_Catch_M_E.position);
-                if (isMoveMap == true && UIManager._instance.CatchState == false)
+                if (isMoveMap == true && UIManager._instance.CatchState == false && isOnUI == false)
                 {
                     m_Transform.position = new Vector3(m_Transform.position.x + offest.x * speed, 0, m_Transform.position.z + offest.z * speed);
                 }
@@ -181,26 +188,12 @@ public class DrawRectangle : MonoBehaviour
             }
             if (touch.phase == TouchPhase.Ended)//手指离开时
             {
+                isOnUI = false;
                 Physics.Raycast(ray, out hitinfo);
                 //Debug.Log(hitinfo.collider.name);
                 if (isMoveMap == false && CatchFunction._instance.isCtach == false)
                 {
-                    if (hitinfo.collider.tag == "Land")
-                    {
-                        if (MoveCount < 1)
-                        {
-                            MoveFunction._instance.Move(hitinfo);
-                            Debug.Log("Move");
-                            MoveCount++;
-                        }
-                    }
-                    if (hitinfo.collider.tag == "Player")
-                    {
-                        if (MoveCount < 1)
-                        {
-                            CatchFunction._instance.SingleCatch(hitinfo);
-                        }
-                    }
+                    TouchKind();
                 }
             }
         }
@@ -244,6 +237,34 @@ public class DrawRectangle : MonoBehaviour
                     CheckCount++;
                 }
             }
+        }
+    }
+
+
+    /// <summary>
+    /// 触摸种类
+    /// </summary>
+    private void TouchKind()
+    {
+        if (hitinfo.collider.tag == "Land")
+        {
+            if (MoveCount < 1)
+            {
+                MoveFunction._instance.Move(hitinfo);
+                //Debug.Log("Move");
+                MoveCount++;
+            }
+        }
+        if (hitinfo.collider.tag == "Player_1")
+        {
+            if (MoveCount < 1)
+            {
+                CatchFunction._instance.SingleCatch(hitinfo);
+            }
+        }
+        if (hitinfo.collider.name == "Light_Factory")
+        {
+            UIManager._instance.Light_Factory();
         }
     }
 }

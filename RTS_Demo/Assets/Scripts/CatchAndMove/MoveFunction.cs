@@ -18,17 +18,18 @@ public class MoveFunction : MonoBehaviour
     /// </summary>
     public void Move(RaycastHit hit)
     {
-        if (CatchFunction._instance.isF2 == true)
-        {
-            CatchFunction._instance.F2Move(hit);
-        }
-        if (CatchFunction._instance.catchMove == true)
-        {
-            CatchFunction._instance.CatchMove(hit);
-        }
-        if (CatchFunction._instance.isSingle == true)
-        {
-            CatchFunction._instance.SingleMove(hit);
-        }
+            if (CatchFunction._instance.isF2 == true)
+            {
+                CatchFunction._instance.F2Move(hit);
+            }
+            if (CatchFunction._instance.catchMove == true)
+            {
+                CatchFunction._instance.CatchMove(hit);
+            }
+            if (CatchFunction._instance.isSingle == true)
+            {
+                CatchFunction._instance.SingleMove(hit);
+            }
     }
+
 }

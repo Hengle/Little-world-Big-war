@@ -1,0 +1,32 @@
+[
+    {
+        "Corps": [
+            {
+                "GO_Name": "Maru",
+                "HP": 100,
+                "MP": 0,
+                "Attack": 2,
+                "Defense": 1,
+                "Speed": 3,
+                "Price": 50,
+                "Gas": 0,
+                "AttackDistance": 5
+            }
+        ]
+    },
+    {
+        "Corps": [
+            {
+                "GO_Name": "BiuBiuBiu",
+                "HP": 150,
+                "MP": 0,
+                "Attack": 4,
+                "Defense": 2,
+                "Speed": 2,
+                "Price": 125,
+                "Gas": 25,
+                "AttackDistance": 7
+            }
+        ]
+    }
+]

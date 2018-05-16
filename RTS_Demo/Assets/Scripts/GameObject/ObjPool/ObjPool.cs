@@ -29,7 +29,7 @@ public class ObjPool : MonoBehaviour
     /// </summary>
     /// <param name="obj_name"></param>
     /// <param name="time"></param>
-    public void GetObj(string obj_name, float time)
+    public void GetObj(string obj_name, float time,Vector3 CreatePostion)
     {
         GameObject obj = Resources.Load<GameObject>(obj_name);
         GameObject obj_active;
@@ -38,7 +38,7 @@ public class ObjPool : MonoBehaviour
         {
             //Debug.Log(objPool.ContainsKey(obj_name));
             //StartCoroutine(CreateFunction._instance.IE_CreateItem(obj, time));
-            obj_active = CreateFunction._instance.CreateItem(obj);
+            obj_active = CreateFunction._instance.CreateItem(obj, CreatePostion);
             l_obj.Add(obj_Index, obj_active);
             obj_Index++;
             objPool.Add(obj_name, obj_active);
@@ -59,7 +59,7 @@ public class ObjPool : MonoBehaviour
             else
             {
                 //StartCoroutine(CreateFunction._instance.IE_CreateItem(obj, time));
-                obj_active = CreateFunction._instance.CreateItem(obj);
+                obj_active = CreateFunction._instance.CreateItem(obj, CreatePostion);
                 l_obj.Add(obj_Index, obj_active);
                 obj_Index++;
                 l_obj_Index = 1;

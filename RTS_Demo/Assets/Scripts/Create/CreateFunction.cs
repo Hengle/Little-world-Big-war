@@ -11,6 +11,7 @@ public class CreateFunction : MonoBehaviour
     public static CreateFunction _instance;
     public List<GameObject> allGameobject;
     private Transform GameManager;
+    public float stop;
 
     void Awake()
     {
@@ -25,19 +26,26 @@ public class CreateFunction : MonoBehaviour
     /// <param name="m_GameObject"></param>
     /// <param name="time"></param>
     /// <returns></returns>
-    public IEnumerator IE_CreateItem(GameObject obj, float time)
+    public IEnumerator IE_CreateItem(GameObject obj, float time,Vector3 CreatePostion)
     {
         Debug.Log("Create");
         yield return new WaitForSeconds(time);
-        CreateItem(obj);
+        CreateItem(obj, CreatePostion);
     }
 
-    public GameObject CreateItem(GameObject obj)
+    /// <summary>
+    /// 创建小兵
+    /// </summary>
+    /// <param name="obj"></param>
+    /// <param name="CreatePostion"></param>
+    /// <returns></returns>
+    public GameObject CreateItem(GameObject obj,Vector3 CreatePostion)
     {
-        GameObject m_gameobject = GameObject.Instantiate(obj, new Vector3(1, 0.5f, 1), Quaternion.identity, GameManager);
+        GameObject m_gameobject = GameObject.Instantiate(obj, CreatePostion, Quaternion.identity, GameManager);
         m_gameobject.AddComponent<NavMeshAgent>();
         m_gameobject.AddComponent<Player_AI>();
         objAddList(m_gameobject);
+        m_gameobject.GetComponent<NavMeshAgent>().stoppingDistance =stop;
         m_gameobject.name = obj.name + allGameobject.Count.ToString();
 
         return m_gameobject;

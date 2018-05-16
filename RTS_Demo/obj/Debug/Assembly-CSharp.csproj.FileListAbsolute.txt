@@ -29,3 +29,6 @@ F:\RTS_Demo\RTS_Demo\Temp\bin\Debug\UnityEngine.VR.xml
 F:\RTS_Demo\RTS_Demo\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
 F:\RTS_Demo\RTS_Demo\obj\Debug\Assembly-CSharp.dll
 F:\RTS_Demo\RTS_Demo\obj\Debug\Assembly-CSharp.pdb
+F:\Project\RTS_Demo\obj\Debug\Assembly-CSharp.csprojResolveAssemblyReference.cache
+F:\Project\RTS_Demo\obj\Debug\Assembly-CSharp.dll
+F:\Project\RTS_Demo\obj\Debug\Assembly-CSharp.pdb
